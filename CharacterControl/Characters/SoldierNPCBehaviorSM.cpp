@@ -10,6 +10,8 @@
 #include "SoldierNPC.h"
 #include "PrimeEngine/Scene/SceneNode.h"
 #include "PrimeEngine/Render/IRenderer.h"
+#include <vector>
+#include <sstream>
 using namespace PE::Components;
 using namespace PE::Events;
 using namespace CharacterControl::Events;
@@ -71,7 +73,16 @@ void SoldierNPCBehaviorSM::do_SoldierNPCMovementSM_Event_TARGET_REACHED(PE::Even
 			if (pWP && StringOps::length(pWP->m_nextWayPointName) > 0)
 			{
 				// have next waypoint to go to
-				pWP = pGameObjectManagerAddon->getWayPoint(pWP->m_nextWayPointName);
+				std::vector<std::string> possibleWaypoints;
+				std::stringstream str(pWP->m_nextWayPointName);
+				while (str.good()) {
+					std::string substr;
+					std::getline(str, substr, ',');
+					possibleWaypoints.push_back(substr);
+				}
+				pWP = pGameObjectManagerAddon->getWayPoint((possibleWaypoints[rand() % possibleWaypoints.size()]).c_str());
+
+
 				if (pWP)
 				{
 					StringOps::writeToString(pWP->m_name, m_curPatrolWayPoint, 32);
