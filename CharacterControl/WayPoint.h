@@ -20,7 +20,7 @@ struct Event_CREATE_WAYPOINT : public PE::Events::Event
 	Matrix4x4 m_base;
 	char m_name[32];
 	char m_nextWaypointName[32];
-
+	int m_needToRunToThisWaypoint;
 	PEUUID m_peuuid; // unique object id
 };
 }
@@ -37,6 +37,7 @@ struct WayPoint : public PE::Components::Component
 	char m_name[32];
 	char m_nextWayPointName[32];
 	Matrix4x4 m_base;
+	int m_needToRunToThisWaypoint;
 
 };
 }; // namespace Components
