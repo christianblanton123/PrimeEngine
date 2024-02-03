@@ -123,7 +123,8 @@ void DebugRenderer::createRootLineMesh()
 
 	DebugRenderer::Instance()->createLineMesh(true, m, &linepts[0].m_x, numPts, 0);// send event while the array is on the stack
 }
-
+//prawdata == arraywith pos and color float
+	//numinrawdata == number of points
 void DebugRenderer::createLineMesh(bool hasTransform, const Matrix4x4 &transform, float *pRawData, int numInRawData, float timeToLive, float scale /* = 1.0f*/)
 {
 	if (EnableDebugRendering && m_numAvailableLineLists)

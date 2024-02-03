@@ -186,6 +186,11 @@ int ClientGame::runGameFrame()
                 
                 drawEvt->m_frameTime = m_frameTime;
                 drawEvt->m_gameTime = m_gameTime;
+            	for(int i=0; i<std::size(drawEvt->m_frustumPlanes.m_data); i++)
+            	{
+            		drawEvt->m_frustumPlanes[i].point=pcam->m_frustum[i].point;
+            		drawEvt->m_frustumPlanes[i].normal=pcam->m_frustum[i].normal;
+            	}
                 
                 drawEvt->m_drawOrder = EffectDrawOrder::First;
                 

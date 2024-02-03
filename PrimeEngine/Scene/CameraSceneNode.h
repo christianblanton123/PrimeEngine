@@ -16,6 +16,7 @@
 #include "PrimeEngine/Math/CameraOps.h"
 
 #include "SceneNode.h"
+#include "PrimeEngine/Math/Plane.h"
 
 
 // Sibling/Children includes
@@ -23,6 +24,8 @@
 namespace PE {
 namespace Components {
 
+
+	
 struct CameraSceneNode : public SceneNode
 {
 
@@ -45,6 +48,7 @@ struct CameraSceneNode : public SceneNode
 	Matrix4x4 m_worldToViewTransform2;
 	Matrix4x4 m_worldTransform2;
 	Matrix4x4 m_viewToProjectedTransform; // objects in local (view) space are multiplied by this to get them to screen space
+	PEStaticArray<Plane,6> m_frustum;
 	float m_near, m_far;
 };
 }; // namespace Components

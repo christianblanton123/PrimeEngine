@@ -37,6 +37,8 @@
 
 #include "SH_DRAW.h"
 
+#include "DebugRenderer.h"
+
 extern int g_disableSkinRender;
 extern int g_iDebugBoneSegment;
 
@@ -173,6 +175,84 @@ void MeshHelpers::setZOnlyEffectOfTopEffectSecuence(Mesh *pObj, Handle hNewEffec
 	}
 }
 
+void MeshHelpers::drawBoundingBox(PE::GameContext &context, PE::MemoryArena arena, Mesh *pObj)
+{
+	 for (int iInst = 0; iInst < pObj->m_instances.m_size; ++iInst)
+        {
+        	
+            MeshInstance *pInst = pObj->m_instances[iInst].getObject<MeshInstance>();
+        	SceneNode *pSN = pInst->getFirstParentByTypePtr<SceneNode>();
+        	if(pSN)
+        	{
+        		Array<float> arr(context, arena);
+        	
+        		arr.reset(6*24);
+        		const PositionBufferCPU* position_buffer_cpu=pObj->m_hPositionBufferCPU.getObject<PositionBufferCPU>();
+        	
+        		Matrix4x4 world = pSN->m_worldTransform;
+        		Vector3 min = pSN->m_base*position_buffer_cpu->m_min-pSN->m_base.getPos();
+        		Vector3 max = pSN->m_base*position_buffer_cpu->m_max-pSN->m_base.getPos();
+        		
+        		 min=world*min;
+        		 max=world*max;
+        		
+        		arr.add(min.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		
+        		arr.add(max.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+
+        		
+        		arr.add(min.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,max.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,max.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,min.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(max.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		arr.add(min.m_x,max.m_y,min.m_z);
+        		arr.add(1.f,0,0);
+        		DebugRenderer::Instance()->createLineMesh(false, Matrix4x4(), arr.getFirstPtr(), arr.m_size/6, 0, 1.0f);
+        		arr.reset(0);
+        	}
+        }
+}
+	
 PE_IMPLEMENT_SINGLETON_CLASS1(SingleHandler_DRAW, Component);
 
 void SingleHandler_DRAW::do_GATHER_DRAWCALLS(Events::Event *pEvt)
@@ -192,29 +272,73 @@ void SingleHandler_DRAW::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 		pZOnlyDrawEvent = (Events::Event_GATHER_DRAWCALLS_Z_ONLY *)(pEvt);
     
     pMeshCaller->m_numVisibleInstances = pMeshCaller->m_instances.m_size; // assume all instances are visible
-    
+	
     // check for bounding volumes here and mark each instance as visible or not visible and set m_numVisibleInstances to number of visible instances
     
     // debug testing of instance culling. do collision check instead.
     // remove false && to enable
-    if (false && pMeshCaller->m_performBoundingVolumeCulling)
+    if (pMeshCaller->m_performBoundingVolumeCulling)
     {
-        pMeshCaller->m_numVisibleInstances = 0;
+	    
+    	MeshHelpers::drawBoundingBox(*m_pContext,m_arena,pMeshCaller);
+    
+    	pMeshCaller->m_numVisibleInstances = 0;
         
-        for (int iInst = 0; iInst < pMeshCaller->m_instances.m_size; ++iInst)
-        {
-            MeshInstance *pInst = pMeshCaller->m_instances[iInst].getObject<MeshInstance>();
-            if (iInst % 2)
-            {
-                pInst->m_culledOut = false;
-                ++pMeshCaller->m_numVisibleInstances;
-            }
-            else
-            {
-                pInst->m_culledOut = true;
-            }
-        }
+    	for (int iInst = 0; iInst < pMeshCaller->m_instances.m_size; ++iInst)
+    	{
+    		MeshInstance *pInst = pMeshCaller->m_instances[iInst].getObject<MeshInstance>();
+    		SceneNode *pSN = pInst->getFirstParentByTypePtr<SceneNode>();
+    		if(pSN&&pDrawEvent)
+    		{
+    			bool doCull=false;
+    			const PositionBufferCPU* position_buffer_cpu=pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>();
+        	
+    			Matrix4x4 world = pSN->m_worldTransform;
+    			Vector3 min = pSN->m_base*position_buffer_cpu->m_min-pSN->m_base.getPos();
+    			min=world*min;
+    			Vector3 max = pSN->m_base*position_buffer_cpu->m_max-pSN->m_base.getPos();
+    			max=world*max;
+    				
+    			PEStaticVector<Vector3,8> AABBpoints;
+    			AABBpoints.add(min);
+    			AABBpoints.add(max);
+    			AABBpoints.add(Vector3(min.m_x,min.m_y,max.m_z));
+    			AABBpoints.add(Vector3(min.m_x,max.m_y,max.m_z));
+    			AABBpoints.add(Vector3(max.m_x,max.m_y,min.m_z));
+    			AABBpoints.add(Vector3(max.m_x,min.m_y,max.m_z));
+    			AABBpoints.add(Vector3(min.m_x,max.m_y,min.m_z));
+    			AABBpoints.add(Vector3(max.m_x,min.m_y,min.m_z));
+    			PEStaticArray<Plane,6> plane = pDrawEvent->m_frustumPlanes;
+    			for(int i=0; i<std::size(pDrawEvent->m_frustumPlanes.m_data); i++)
+    			{
+    				bool allPointsBehindPlane=true;
+    				for(const Vector3& point : AABBpoints.m_data)
+    				{
+    					if (plane[i].normal.dotProduct(point-plane[i].point)>0)
+    					{
+    						allPointsBehindPlane = false;
+    						break;
+    					}    		
+    				}
+    				if (allPointsBehindPlane)
+    				{
+    					doCull = true;
+    				}    				
+    			}
+    			if(doCull)
+    			{
+    				pInst->m_culledOut=true;
+    			}
+    			else
+    			{
+    				pInst->m_culledOut=false;
+    				++pMeshCaller->m_numVisibleInstances;
+    			}
+    				
+    		}
+    	}
     }
+    
     
 
 	DrawList *pDrawList = pDrawEvent ? DrawList::Instance() : DrawList::ZOnlyInstance();
@@ -269,6 +393,8 @@ void SingleHandler_DRAW::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 	
 	projectionViewWorldMatrix = projectionViewWorldMatrix * worldMatrix;
 
+	
+	
 	// draw all pixel ranges with different materials
 	PrimitiveTypes::UInt32 numRanges = MeshHelpers::getNumberOfRangeCalls(pibGPU);
 	

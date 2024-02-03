@@ -36,6 +36,7 @@ void MeshCPU::ReadMesh(const char *filename, const char *package, const char *ta
 	
 	m_hPositionBufferCPU = PositionBufferCPUManager::Instance()->ReadVertexBuffer(vbfilename, package, tag);
 	
+	
 	// Index buffer filename
 	char ibfilename[256];
 	f.nextNonEmptyLine(ibfilename, 255);

@@ -25,8 +25,8 @@ struct SoldierNPCMovementSM_Event_MOVE_TO : public PE::Events::Event {
 struct SoldierNPCMovementSM_Event_STOP : public PE::Events::Event {
 	PE_DECLARE_CLASS(SoldierNPCMovementSM_Event_STOP);
 
-	SoldierNPCMovementSM_Event_STOP()
-	{}
+	SoldierNPCMovementSM_Event_STOP()=default;
+	
 };
 
 // sent by this state machine to its components. probably to behavior state machine
@@ -36,6 +36,14 @@ struct SoldierNPCMovementSM_Event_TARGET_REACHED : public PE::Events::Event {
 	SoldierNPCMovementSM_Event_TARGET_REACHED()
 	{}
 };
+	struct SoldierNPCMovementSM_Event_SHOOT : public PE::Events::Event {
+		PE_DECLARE_CLASS(SoldierNPCMovementSM_Event_SHOOT);
+
+		SoldierNPCMovementSM_Event_SHOOT()
+		{}
+
+		PE::Handle m_targetNPC;
+	};
 
 };
 namespace Components {
@@ -75,6 +83,8 @@ struct SoldierNPCMovementSM : public PE::Components::Component
 	PE_DECLARE_IMPLEMENT_EVENT_HANDLER_WRAPPER(do_UPDATE)
 	virtual void do_UPDATE(PE::Events::Event *pEvt);
 
+	PE_DECLARE_IMPLEMENT_EVENT_HANDLER_WRAPPER(do_SoldierNPCMovementSM_Event_SHOOT)
+	virtual void do_SoldierNPCMovementSM_Event_SHOOT(PE::Events::Event *pEvt);
 	//////////////////////////////////////////////////////////////////////////
 	// Member Variables
 	//////////////////////////////////////////////////////////////////////////

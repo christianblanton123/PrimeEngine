@@ -10,6 +10,7 @@
 #include "PrimeEngine/FileSystem/FileReader.h"
 #include "PrimeEngine/Utils/StringOps.h"
 #include "PrimeEngine/MainFunction/MainFunctionArgs.h"
+#include "PrimeEngine/Math/MathHelpers.h"
 
 // Sibling/Children includes
 
@@ -43,6 +44,26 @@ void PositionBufferCPU::ReadPositionBuffer(const char *filename, const char *pac
 		f.nextFloat32(val);
 		m_values.add(val * factor);
 	}
+	for(int i=0; i<n;i++)
+	{
+		PrimitiveTypes::UInt32 currIndex=i*3;
+		m_min.m_x=min(m_min.m_x,m_values[currIndex]);
+		m_min.m_y=min(m_min.m_y,m_values[currIndex+1]);
+		m_min.m_z=min(m_min.m_z,m_values[currIndex+2]);
+		
+		m_max.m_x=max(m_max.m_x,m_values[currIndex]);
+		m_max.m_y=max(m_max.m_y,m_values[currIndex+1]);
+		m_max.m_z=max(m_max.m_z,m_values[currIndex+2]);
+	}
+	/*
+	AABBpoints.add(m_min);
+	AABBpoints.add(m_max);
+	AABBpoints.add(Vector3(m_min.m_x,m_min.m_y,m_max.m_z));
+	AABBpoints.add(Vector3(m_min.m_x,m_max.m_y,m_max.m_z));
+	AABBpoints.add(Vector3(m_max.m_x,m_max.m_y,m_min.m_z));
+	AABBpoints.add(Vector3(m_max.m_x,m_min.m_y,m_max.m_z));
+	AABBpoints.add(Vector3(m_min.m_x,m_max.m_y,m_min.m_z));
+	AABBpoints.add(Vector3(m_max.m_x,m_min.m_y,m_min.m_z));*/
 }
 
 void PositionBufferCPU::createEmptyCPUBuffer()

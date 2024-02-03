@@ -17,8 +17,7 @@ struct Event_CreateSoldierNPC : public PE::Events::Event_CREATE_MESH
 
 	// Lua interface prefixed with l_
 	static int l_Construct(lua_State* luaVM);
-
-	int m_npcType;
+	char m_Name[32];
 	char m_gunMeshName[64];
 	char m_gunMeshPackage[64];
 	char m_patrolWayPoint[32];

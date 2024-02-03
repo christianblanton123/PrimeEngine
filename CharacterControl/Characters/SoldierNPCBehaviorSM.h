@@ -20,6 +20,7 @@ struct SoldierNPCBehaviorSM : public PE::Components::Component
 		IDLE, // stand in place
 		WAITING_FOR_WAYPOINT, // have a name of waypoint to go to, but it has not been loaded yet
 		PATROLLING_WAYPOINTS,
+		STAND_SHOOTING
 	};
 
 
@@ -46,6 +47,7 @@ struct SoldierNPCBehaviorSM : public PE::Components::Component
 
 	bool m_havePatrolWayPoint;
 	char m_curPatrolWayPoint[32];
+	char m_target[32];
 	States m_state;
 };
 

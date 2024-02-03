@@ -36,7 +36,7 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 	Vector3 up = Vector3(mref_worldTransform.m[0][1], mref_worldTransform.m[1][1], mref_worldTransform.m[2][1]);
 
 	m_worldToViewTransform = CameraOps::CreateViewMatrix(pos, target, up);
-
+	
 	m_worldTransform2 = mref_worldTransform;
 
 	m_worldTransform2.moveForward(Z_ONLY_CAM_BIAS);
@@ -51,6 +51,28 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
     PrimitiveTypes::Float32 aspect = (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getWidth()) / (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getHeight());
     
     PrimitiveTypes::Float32 verticalFov = 0.33f * PrimitiveTypes::Constants::c_Pi_F32;
+    PrimitiveTypes::Float32 smallerVerticalFov = 0.2f * PrimitiveTypes::Constants::c_Pi_F32;
+	PrimitiveTypes::Float32 horizontalFov = smallerVerticalFov*aspect;
+	m_frustum[0]=Plane{n,pos+n*m_near};
+	m_frustum[1]=Plane{-n, pos+n*m_far};
+	//right
+	Vector3 rightVector=up.crossProduct(n);	
+	Vector3 rightDir=cos((PrimitiveTypes::Constants::c_Pi_F32-horizontalFov)/2)*rightVector+sin((PrimitiveTypes::Constants::c_Pi_F32-horizontalFov)/2)*n;
+	Vector3 rightNormal=rightDir.crossProduct(up);
+	m_frustum[2]=Plane{rightNormal, pos+n*m_near};
+    //left
+	Vector3 leftVector=rightVector*-1;
+	Vector3 leftDir=cos((PrimitiveTypes::Constants::c_Pi_F32-horizontalFov)/2)*leftVector+sin((PrimitiveTypes::Constants::c_Pi_F32-horizontalFov)/2)*n;
+	Vector3 leftNormal=up.crossProduct(leftDir);
+	m_frustum[3]=Plane{leftNormal, pos+n*m_near};
+    //bot
+	Vector3 downDir=cos((PrimitiveTypes::Constants::c_Pi_F32-smallerVerticalFov)/2)*-1*up+sin((PrimitiveTypes::Constants::c_Pi_F32-smallerVerticalFov)/2)*n;
+	Vector3 botNormal=downDir.crossProduct(rightVector);
+	m_frustum[4]=Plane{botNormal,pos+n*m_near};
+    //top
+	Vector3 topDir=cos((PrimitiveTypes::Constants::c_Pi_F32-smallerVerticalFov)/2)*up+sin((PrimitiveTypes::Constants::c_Pi_F32-smallerVerticalFov)/2)*n;
+	Vector3 topNormal=rightVector.crossProduct(topDir);
+	m_frustum[5]=Plane{topNormal,pos+n*m_near};
     if (aspect < 1.0f)
     {
         //ios portrait view

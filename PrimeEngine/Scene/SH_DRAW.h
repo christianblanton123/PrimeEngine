@@ -165,6 +165,7 @@ struct MeshHelpers
 	static void setPixelShadersOfTopEffects(PE::GameContext &context, PE::MemoryArena arena, Mesh *pObj);
 	static void setEffectOfTopEffectSecuence(Mesh *pObj, Handle hNewEffect);
 	static void setZOnlyEffectOfTopEffectSecuence(Mesh *pObj, Handle hNewEffect);
+	static void drawBoundingBox(PE::GameContext &context, PE::MemoryArena arena, Mesh* pObj);
 };
 
 }; // namespace Components

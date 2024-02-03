@@ -12,6 +12,7 @@
 #include "PrimeEngine/MemoryManagement/Handle.h"
 #include "PrimeEngine/PrimitiveTypes/PrimitiveTypes.h"
 #include "../../Utils/Array/Array.h"
+#include "PrimeEngine/Math/Vector3.h"
 
 // Sibling/Children includes
 
@@ -41,7 +42,11 @@ struct PositionBufferCPU : PE::PEAllocatableAndDefragmentable
 	PrimitiveTypes::UInt32 getByteSize(){return m_values.m_size * sizeof(PrimitiveTypes::Float32);}
 
 	Array<PrimitiveTypes::Float32> m_values;
-
+	//aabb
+	Vector3 m_max;
+	Vector3 m_min;
+	PEStaticVector<Vector3,8> AABBpoints;
+	
 	PE::GameContext *m_pContext;
 };
 

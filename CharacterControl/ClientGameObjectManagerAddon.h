@@ -3,7 +3,7 @@
 
 #include "GameObjectMangerAddon.h"
 #include "Events/Events.h"
-
+#include "Characters/SoldierNPC.h"
 #include "WayPoint.h"
 
 namespace CharacterControl
@@ -53,6 +53,8 @@ struct ClientGameObjectManagerAddon : public GameObjectManagerAddon
 	//
 	// waypoint search
 	WayPoint *getWayPoint(const char *name);
+	SoldierNPC *getSoldier(const char* name);
+
 };
 
 

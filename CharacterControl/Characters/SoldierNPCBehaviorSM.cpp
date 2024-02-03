@@ -96,7 +96,18 @@ void SoldierNPCBehaviorSM::do_SoldierNPCMovementSM_Event_TARGET_REACHED(PE::Even
 					// release memory now that event is processed
 					h.release();
 				}
+				/*
+				SoldierNPC* pTarget = pGameObjectManagerAddon->getSoldier(m_target);
+				if (pTarget) {
+					//PE::Handle h("SoldierNPCMovementSM_Event_MOVE_TO", sizeof(SoldierNPCMovementSM_Event_MOVE_TO));
+
+				}
+				*/
+
+
 			}
+
+
 			else
 			{
 				m_state = IDLE;
@@ -121,6 +132,7 @@ void SoldierNPCBehaviorSM::do_PRE_RENDER_needsRC(PE::Events::Event *pEvt)
 		DebugRenderer::Instance()->createTextMesh(
 			buf, false, false, true, false, 0,
 			base.getPos(), 0.01f, pRealEvent->m_threadOwnershipMask);
+
 		
 		{
 			//we can also construct points ourself
@@ -169,8 +181,9 @@ void SoldierNPCBehaviorSM::do_UPDATE(PE::Events::Event *pEvt)
 				}
 			}
 		}
-		else
+		else if(m_state==IDLE)
 		{
+			
 			// should not happen, but in any case, set state to idle
 			m_state = IDLE;
 
@@ -180,6 +193,29 @@ void SoldierNPCBehaviorSM::do_UPDATE(PE::Events::Event *pEvt)
 			m_hMovementSM.getObject<Component>()->handleEvent(pEvt);
 			// release memory now that event is processed
 			h.release();
+		}
+	}
+	else if(m_state==IDLE||m_state==STAND_SHOOTING)
+	{
+		SoldierNPC* soldier=getFirstParentByTypePtr<SoldierNPC>();
+		if(StringOps::strcmp(soldier->m_name,"Shooter")==0)
+		{
+			m_state=STAND_SHOOTING;
+
+			ClientGameObjectManagerAddon *pGameObjectManagerAddon = (ClientGameObjectManagerAddon *)(m_pContext->get<CharacterControlContext>()->getGameObjectManagerAddon());
+
+			if(pGameObjectManagerAddon)
+			{
+				SoldierNPC* pNPC=pGameObjectManagerAddon->getSoldier("Target");
+				if(pNPC)
+				{
+					PE::Handle h("SoldierNPCMovementSM_EVENT_SHOOT",sizeof(SoldierNPCMovementSM_Event_SHOOT));
+					SoldierNPCMovementSM_Event_SHOOT* pEvt = new(h) SoldierNPCMovementSM_Event_SHOOT();
+					pEvt->m_targetNPC=pNPC->getHandle();
+					m_hMovementSM.getObject<Component>()->handleEvent(pEvt);
+					h.release();
+				}
+			}
 		}
 	}
 }

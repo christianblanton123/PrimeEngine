@@ -67,7 +67,12 @@ struct MeshCPU : PE::PEAllocatableAndDefragmentable
 	Handle m_hMaterialSetCPU;
 
 	Handle m_hSkinWeightsCPU;
-
+	float minX;
+	float minY;
+	float minZ;
+	float maxX;
+	float maxY;
+	float maxZ;
 	PrimitiveTypes::Bool m_manualBufferManagement; // if true, this mesh wont be cached and reused
 
 	PE::MemoryArena m_arena; PE::GameContext *m_pContext;

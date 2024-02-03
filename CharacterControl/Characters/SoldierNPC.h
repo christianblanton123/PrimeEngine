@@ -15,7 +15,7 @@ struct SoldierNPC : public PE::Components::Component
 	PE_DECLARE_CLASS(SoldierNPC);
 
 	SoldierNPC(PE::GameContext &context, PE::MemoryArena arena, PE::Handle hMyself, Events::Event_CreateSoldierNPC *pEvt);
-
+	char m_name[32];
 	virtual void addDefaultComponents();
 };
 }; // namespace Components

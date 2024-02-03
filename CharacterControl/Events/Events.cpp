@@ -25,13 +25,14 @@ int Event_CreateSoldierNPC::l_Construct(lua_State* luaVM)
 	
 	// get arguments from stack
 	int numArgs, numArgsConst;
-	numArgs = numArgsConst = 19;
+	numArgs = numArgsConst = 20;
 
 	PE::GameContext *pContext = (PE::GameContext*)(lua_touserdata(luaVM, -numArgs--));
 
 	// this function should only be called frm game thread, so we can use game thread thread owenrship mask
 	Event_CreateSoldierNPC *pEvt = new(h) Event_CreateSoldierNPC(pContext->m_gameThreadThreadOwnershipMask);
-
+	const char* mName = lua_tostring(luaVM, -numArgs--);
+	//const char* mTarget = lua_tostring(luaVM, -numArgs--);
 	const char* name = lua_tostring(luaVM, -numArgs--);
 	const char* package = lua_tostring(luaVM, -numArgs--);
 
@@ -64,6 +65,8 @@ int Event_CreateSoldierNPC::l_Construct(lua_State* luaVM)
 
 
 	// set data values before popping memory off stack
+	StringOps::writeToString(mName, pEvt->m_Name, 255);
+	//StringOps::writeToString(mTarget, pEvt->m_Target, 255);
 	StringOps::writeToString(name, pEvt->m_meshFilename, 255);
 	StringOps::writeToString(package, pEvt->m_package, 255);
 
